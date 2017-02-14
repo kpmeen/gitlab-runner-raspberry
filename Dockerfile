@@ -2,6 +2,10 @@ FROM resin/rpi-raspbian:jessie
 
 # Adding "dumb-init".
 ADD dumb-init_v1.2.0 /usr/bin/dumb-init
+ADD entrypoint /
+
+RUN \
+    chmod +x /entrypoint && chmod +x /usr/bin/dumb-init
 
 # Starting off by installing some pre-requisites
 RUN \
@@ -23,11 +27,9 @@ RUN \
     apt-get clean && \
     mkdir -p /etc/gitlab-runner/certs && \
     chmod -R 700 /etc/gitlab-runner && \
-    rm -rf /var/lib/apt/lists/*    
-
-ADD entrypoint /
-RUN chmod +x /entrypoint
+    rm -rf /var/lib/apt/lists/*
 
 VOLUME ["/etc/gitlab-runner", "/home/gitlab-runner"]
 ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint"]
 CMD ["run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]
+
